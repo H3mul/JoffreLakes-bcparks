@@ -54,6 +54,10 @@ help()
 	exit 2
 }
 
+beep() {
+    echo -e "\a"
+}
+
 ############### ARGS #############
 # getting and checking parameters
 SHORT=d::,s::,p::,h
@@ -125,7 +129,9 @@ fi
 ## checking and confirming park value
 ## got them based on API request here: https://reserve.bcparks.ca/dayuse/
 HEADERS="-H 'sec-ch-ua: \"Google Chrome\";v=\"117\", \"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"117\"'   -H 'Accept: application/json, text/plain, */*'   -H 'Referer: https://reserve.bcparks.ca/'   -H 'sec-ch-ua-mobile: ?0'   -H 'User-Agent: Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'   -H 'sec-ch-ua-platform: \"Chrome OS\"'   --compressed"
-URL_BASE="https://jd7n1axqh0.execute-api.ca-central-1.amazonaws.com/api/reservation?"
+
+# URL_BASE="https://jd7n1axqh0.execute-api.ca-central-1.amazonaws.com/api/reservation?"
+URL_BASE="https://reserve.bcparks.ca/api/reservation?"
 
 case "$PARK" in
 	"" | 1 | "Joffre" ) 
