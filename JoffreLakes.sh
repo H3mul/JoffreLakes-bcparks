@@ -75,10 +75,14 @@ alert() {
 
 ############### ARGS #############
 # getting and checking parameters
-SHORT=d::,s::,p::,h
-LONG=day::,secondday::,park::,help,pushbullet-token::
+SHORT=d:,s:,p:,h
+LONG=day:,secondday:,park:,help,pushbullet-token:
 OPTS=$(getopt -a -n JoffreLakes.sh --options $SHORT --longoptions $LONG -- "$@")
 PUSHBULLET_TOKEN="${PUSHBULLET_TOKEN:-}"
+DATE=""
+DATE2=""
+PARK=""
+
 
 eval set -- "$OPTS"
 
