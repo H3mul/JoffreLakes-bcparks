@@ -21,7 +21,7 @@ set -euo pipefail
 # help message in case of something
 help()
 {
-	echo "Usage: JoffreLakes.sh [ -d | --day ] [ -s | --secondday ] [ -p | --park ] [ -h | --help ]
+	echo "Usage: JoffreLakes.sh [ -d | --day ] [ -s | --secondday ] [ -p | --park ] [ --pushbullet-token ] [ -h | --help ]
 
 			-d | --day:
 				by default is 2 days ahead ($(date -d "+2 days" +%F))
@@ -45,6 +45,9 @@ help()
 				6) Golden-South - not supported, due to morning and evening options
 				7) Golden-Gold - not supported, due to morning and evening options
 				8) Golden-West - not supported, due to morning and evening options
+
+			--pushbullet-token:
+				Use a PushBullet token to send alerts to your device in addition to beeping in terminal
 
 			-h | --help:
 				show this help message
