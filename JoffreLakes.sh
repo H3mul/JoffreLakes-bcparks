@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 ####
 # Simple script to receive notification about available one-day-passes on Joffre Lake, BC, Canada
 #
@@ -58,11 +60,25 @@ beep() {
     echo -e "\a"
 }
 
+alert() {
+    if [ -z "$PUSHBULLET_TOKEN" ]; then
+        return
+    fi
+    
+    curl --header "Access-Token: $PUSHBULLET_TOKEN" \
+         --header 'Content-Type: application/json' \
+         --data-binary "{\"type\": \"link\", \"title\": \"BC Parks Watcher Alert\", \"body\": \"$1\", \"url\": \"https://reserve.bcparks.ca/dayuse/registration\"}" \
+         --request POST \
+         https://api.pushbullet.com/v2/pushes >/dev/null 2>&1 \
+         && echo "Notification sent to PushBullet"
+}
+
 ############### ARGS #############
 # getting and checking parameters
 SHORT=d::,s::,p::,h
-LONG=day::,secondday::,park::,help
+LONG=day::,secondday::,park::,help,pushbullet-token::
 OPTS=$(getopt -a -n JoffreLakes.sh --options $SHORT --longoptions $LONG -- "$@")
+PUSHBULLET_TOKEN="${PUSHBULLET_TOKEN:-}"
 
 eval set -- "$OPTS"
 
@@ -79,6 +95,10 @@ do
 			;;
 		-p | --park )
 			PARK="$2"
+			shift 2
+			;;
+		--pushbullet-token)
+			PUSHBULLET_TOKEN="$2"
 			shift 2
 			;;
 		-h | --help)
@@ -209,16 +229,25 @@ echo "CHECKING PASSES FOR:
 
 echo "Checking beep command..."
 beep
-echo "if you didn't hear a beep sound, please check your speakers and try to run 'beep' command in your console.
-	"
+echo "if you didn't hear a beep sound, please check your speakers and try to run 'beep' command in your console."
+echo ""
+
+if [ -n "$PUSHBULLET_TOKEN" ]; then
+	echo "Sending a test alert to PushBullet..."
+    alert "Starting to watch for ${PARK_NAME} on ${DATE}${DATE2:+ and ${DATE2}}"
+    echo ""
+fi
+
+echo "Starting watch for ${PARK_NAME} on ${DATE}${DATE2:+ and ${DATE2}}"
+echo ""
 
 while true; do
 	echo curl \'$URL\' $HEADERS | bash 2>/dev/null | tee -a $LOG
 	echo -n ",${PARK_NAME}," | tee -a $LOG
 	date | tee -a $LOG
 	
-	(tail -1 $LOG | grep "\"${DATE}\":{\"DAY\":{\"capacity\":\"Low\"") && echo "Found passes for $DATE !!!" && beep
-	[ ! -z "$DATE2" ] && (tail -1 $LOG | grep "\"${DATE2}\":{\"DAY\":{\"capacity\":\"Low\"") && echo "Found passes for $DATE2 !!!" && beep
+	(tail -1 $LOG | grep "\"${DATE}\":{\"DAY\":{\"capacity\":\"Low\"") && echo "Found passes for $DATE !!!" | alert "Found passes for $PARK_NAME on $DATE!" && beep
+	[ ! -z "$DATE2" ] && (tail -1 $LOG | grep "\"${DATE2}\":{\"DAY\":{\"capacity\":\"Low\"") && echo "Found passes for $DATE2 !!!" && alert "Found passes for $PARK_NAME on $DATE!" && beep
 	
 	sleep 5
 done
