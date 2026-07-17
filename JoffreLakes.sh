@@ -247,7 +247,7 @@ while true; do
 	date | tee -a $LOG
 	
 	(tail -1 $LOG | grep "\"${DATE}\":{\"DAY\":{\"capacity\":\"Low\"") && echo "Found passes for $DATE !!!" | alert "Found passes for $PARK_NAME on $DATE!" && beep
-	[ ! -z "$DATE2" ] && (tail -1 $LOG | grep "\"${DATE2}\":{\"DAY\":{\"capacity\":\"Low\"") && echo "Found passes for $DATE2 !!!" && alert "Found passes for $PARK_NAME on $DATE!" && beep
+	[ ! -z "$DATE2" ] && (tail -1 $LOG | grep "\"${DATE2}\":{\"DAY\":{\"capacity\":\"Low\"") && echo "Found passes for $DATE2 !!!" && alert "Found passes for $PARK_NAME on $DATE2!" && beep
 	
 	sleep 5
 done
